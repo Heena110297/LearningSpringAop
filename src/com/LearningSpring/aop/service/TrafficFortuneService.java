@@ -7,8 +7,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class TrafficFortuneService {
 
-	public String getFortune() {
-
+	public String getFortune(boolean tripwire) {
+       if(tripwire) {
+    	   throw new RuntimeException("Major Accident ! Highway is closed");
+       }
 		// simulate a delay
 		try {
 			TimeUnit.SECONDS.sleep(5);

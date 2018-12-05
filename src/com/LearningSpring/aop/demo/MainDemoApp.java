@@ -31,7 +31,7 @@ public class MainDemoApp {
 		 * 
 		 */
 		// close the context
-		AccountDAO theAccountDAO = context.getBean("accountDAO", AccountDAO.class);
+		/*AccountDAO theAccountDAO = context.getBean("accountDAO", AccountDAO.class);
 		List<Account> theAccounts = null;
 		myLogger.info("\n\n Main Program: AfterThrowingDemoApp");
 		try {
@@ -46,11 +46,17 @@ public class MainDemoApp {
 		 * myLogger.info("--------------"); myLogger.info(theAccounts);
 		 * myLogger.info("\n");
 		 */
-		
+		boolean tripwire = true ;
        TrafficFortuneService theFortuneService  = context.getBean("trafficFortuneService",TrafficFortuneService.class);
        myLogger.info("Main Program:  AroundDemo");
        myLogger.info("Calling Get Fortune");
-       String data = theFortuneService.getFortune();
+       String data = null;
+       try {
+        data = theFortuneService.getFortune(tripwire);
+       }
+       catch(Exception exc) {
+    	   myLogger.info("Finally exception caught");
+       }
        myLogger.info("fortune is : "+data);
        myLogger.info("Finished");
 		context.close();

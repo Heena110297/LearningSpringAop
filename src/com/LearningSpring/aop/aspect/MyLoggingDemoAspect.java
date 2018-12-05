@@ -22,7 +22,8 @@ import com.LearningSpring.aop.demo.Account;
 @Component
 @Order(2)
 public class MyLoggingDemoAspect {
-private Logger myLogger = Logger.getLogger(getClass().getName());
+	private Logger myLogger = Logger.getLogger(getClass().getName());
+
 	@Pointcut("execution(* com.LearningSpring.aop.dao.*.*(..))")
 	private void forDaoPackage() {
 
@@ -70,7 +71,7 @@ private Logger myLogger = Logger.getLogger(getClass().getName());
 
 		Object[] args = theJoinPoint.getArgs();
 		for (Object tempArg : args) {
-			myLogger.info(""+tempArg);
+			myLogger.info("" + tempArg);
 			if (tempArg instanceof Account) {
 				Account theAccount = (Account) tempArg;
 				myLogger.info("account name:" + theAccount.getName());
@@ -118,14 +119,20 @@ private Logger myLogger = Logger.getLogger(getClass().getName());
 	@Around("execution(* com.LearningSpring.aop.service.*.getFortune(..))")
 	public Object afterGetFortune(ProceedingJoinPoint theProceedingJoinPoint) throws Throwable {
 		// get begin timestamp
-
+		Object result = null;
 		String method = theProceedingJoinPoint.getSignature().toShortString();
 		myLogger.info("Executing @around on method" + method);
 		long begin = System.currentTimeMillis();
-		Object result = theProceedingJoinPoint.proceed();
+		try {
+			result = theProceedingJoinPoint.proceed();
+		} catch (Exception exc) {
+			myLogger.warning("@Around advice: We have a problem" + exc.getMessage());
+			result = "Nothing Exciting her e. Move along !";
+			throw exc; 
+		}
 		long end = System.currentTimeMillis();
 		long duration = end - begin;
-		myLogger.info("\n=====> Duration: " + duration/1000.0 + " seconds");
+		myLogger.info("\n=====> Duration: " + duration / 1000.0 + " seconds");
 
 		return result;
 	}
