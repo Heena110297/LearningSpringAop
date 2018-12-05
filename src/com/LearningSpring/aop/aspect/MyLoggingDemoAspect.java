@@ -1,8 +1,10 @@
 package com.LearningSpring.aop.aspect;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -39,12 +41,26 @@ public class MyLoggingDemoAspect {
 	//@Before("execution(* add*(com.LearningSpring.aop.demo.Account,..))")
 	//@Before("execution(* add*(..))")
 	
-	@Before("forDaoPackageNoGetterAndSetter()")
+/*	@Before("forDaoPackageNoGetterAndSetter()")
 	public void beforeAddAccountAdvice() {
 		
 		System.out.println("\n=====>>> Executing @Before advice on method");
 		
 	}
+	*/
+	
+	@Before("forDaoPackageNoGetterAndSetter()")
+	public void beforeAddAccountAdvice(JoinPoint theJoinPoint) {
+	 MethodSignature methodSig = (MethodSignature)theJoinPoint.getSignature();
+	 System.out.println("Method: " + methodSig);
+	 
+	 Object[] args = theJoinPoint.getArgs();
+	 for(Object tempArg : args) {
+		 System.out.println(tempArg);
+	 }
+	}
+	
+	
 	
 	
 }
