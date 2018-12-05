@@ -13,7 +13,10 @@ private String name;
 private String serviceCode ;
 
 
-public List<Account> findAccounts(){
+public List<Account> findAccounts(boolean tripWire){
+	if(tripWire) {
+		throw new RuntimeException("Nothing for you !!");
+	}
 	List<Account> myAccounts = new ArrayList<>();
 	
 	Account temp1 = new Account("John","Silver");

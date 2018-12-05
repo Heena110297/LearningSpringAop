@@ -3,7 +3,9 @@ package com.LearningSpring.aop.aspect;
 import java.util.List;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -95,6 +97,20 @@ public class MyLoggingDemoAspect {
 			String theUpperName = tempAccount.getName().toUpperCase();
 		    tempAccount.setName(theUpperName);
 		}
+	}
+	
+	
+	@AfterThrowing(pointcut = "execution(* com.LearningSpring.aop.dao.AccountDAO.findAccounts(..))", throwing = "theExec")
+	public void afterThrowingFindAccountsAdvice(JoinPoint theJoinPoint ,Throwable theExec) {
+		String method = theJoinPoint.getSignature().toShortString();
+		System.out.println("\n======>>> Executing @AfterThrowing on method: "+ method);
+		System.out.println("\n======>>> The Exception is: "+theExec);
+	}
+	
+	@After("execution(* com.LearningSpring.aop.dao.AccountDAO.findAccounts(..))")
+	public void afterFinallyMethodExceutes(JoinPoint theJoinPoint) {
+		String method = theJoinPoint.getSignature().toShortString();
+		System.out.println("Exceuting @After (finally) advice");
 	}
 
 }
