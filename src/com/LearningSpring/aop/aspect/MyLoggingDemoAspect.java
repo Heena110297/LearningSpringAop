@@ -1,11 +1,14 @@
 package com.LearningSpring.aop.aspect;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -19,7 +22,7 @@ import com.LearningSpring.aop.demo.Account;
 @Component
 @Order(2)
 public class MyLoggingDemoAspect {
-
+private Logger myLogger = Logger.getLogger(getClass().getName());
 	@Pointcut("execution(* com.LearningSpring.aop.dao.*.*(..))")
 	private void forDaoPackage() {
 
@@ -55,7 +58,7 @@ public class MyLoggingDemoAspect {
 	 * @Before("forDaoPackageNoGetterAndSetter()") public void
 	 * beforeAddAccountAdvice() {
 	 * 
-	 * System.out.println("\n=====>>> Executing @Before advice on method");
+	 * myLogger.info("\n=====>>> Executing @Before advice on method");
 	 * 
 	 * }
 	 */
@@ -63,15 +66,15 @@ public class MyLoggingDemoAspect {
 	@Before("forDaoPackageNoGetterAndSetter()")
 	public void beforeAddAccountAdvice(JoinPoint theJoinPoint) {
 		MethodSignature methodSig = (MethodSignature) theJoinPoint.getSignature();
-		System.out.println("Method: " + methodSig);
+		myLogger.info("Method: " + methodSig);
 
 		Object[] args = theJoinPoint.getArgs();
 		for (Object tempArg : args) {
-			System.out.println(tempArg);
+			myLogger.info(""+tempArg);
 			if (tempArg instanceof Account) {
 				Account theAccount = (Account) tempArg;
-				System.out.println("account name:" + theAccount.getName());
-				System.out.println("account level:" + theAccount.getLevel());
+				myLogger.info("account name:" + theAccount.getName());
+				myLogger.info("account level:" + theAccount.getLevel());
 			}
 		}
 	}
@@ -80,11 +83,11 @@ public class MyLoggingDemoAspect {
 	public void afterReturningFindAccountsAdvice(JoinPoint theJoinPoint, List<Account> result) {
 		{
 			String method = theJoinPoint.getSignature().toShortString();
-			System.out.println("\n====>>> Executing @AfterReturning on method: " + method);
+			myLogger.info("\n====>>> Executing @AfterReturning on method: " + method);
 
-			System.out.println("\n====>>> Result is : " + result);
+			myLogger.info("\n====>>> Result is : " + result);
 			if (!result.isEmpty()) {
-                  convertAccountNamesToUpperCase(result);
+				convertAccountNamesToUpperCase(result);
 			}
 
 		}
@@ -92,25 +95,39 @@ public class MyLoggingDemoAspect {
 	}
 
 	private void convertAccountNamesToUpperCase(List<Account> result) {
-		
-		for(Account tempAccount : result) {
+
+		for (Account tempAccount : result) {
 			String theUpperName = tempAccount.getName().toUpperCase();
-		    tempAccount.setName(theUpperName);
+			tempAccount.setName(theUpperName);
 		}
 	}
-	
-	
+
 	@AfterThrowing(pointcut = "execution(* com.LearningSpring.aop.dao.AccountDAO.findAccounts(..))", throwing = "theExec")
-	public void afterThrowingFindAccountsAdvice(JoinPoint theJoinPoint ,Throwable theExec) {
+	public void afterThrowingFindAccountsAdvice(JoinPoint theJoinPoint, Throwable theExec) {
 		String method = theJoinPoint.getSignature().toShortString();
-		System.out.println("\n======>>> Executing @AfterThrowing on method: "+ method);
-		System.out.println("\n======>>> The Exception is: "+theExec);
+		myLogger.info("\n======>>> Executing @AfterThrowing on method: " + method);
+		myLogger.info("\n======>>> The Exception is: " + theExec);
 	}
-	
+
 	@After("execution(* com.LearningSpring.aop.dao.AccountDAO.findAccounts(..))")
 	public void afterFinallyMethodExceutes(JoinPoint theJoinPoint) {
 		String method = theJoinPoint.getSignature().toShortString();
-		System.out.println("Exceuting @After (finally) advice");
+		myLogger.info("Exceuting @After (finally) advice");
+	}
+
+	@Around("execution(* com.LearningSpring.aop.service.*.getFortune(..))")
+	public Object afterGetFortune(ProceedingJoinPoint theProceedingJoinPoint) throws Throwable {
+		// get begin timestamp
+
+		String method = theProceedingJoinPoint.getSignature().toShortString();
+		myLogger.info("Executing @around on method" + method);
+		long begin = System.currentTimeMillis();
+		Object result = theProceedingJoinPoint.proceed();
+		long end = System.currentTimeMillis();
+		long duration = end - begin;
+		myLogger.info("\n=====> Duration: " + duration/1000.0 + " seconds");
+
+		return result;
 	}
 
 }

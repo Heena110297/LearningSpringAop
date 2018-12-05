@@ -1,16 +1,18 @@
 package com.LearningSpring.aop.demo;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.LearningSpring.aop.dao.AccountDAO;
 import com.LearningSpring.aop.dao.MembershipDAO;
+import com.LearningSpring.aop.service.TrafficFortuneService;
 
 public class MainDemoApp {
-
+	 private static Logger myLogger = Logger.getLogger(MainDemoApp.class.getName());
 	public static void main(String[] args) {
-
+       
 		// read spring config java class
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DemoConfig.class);
 
@@ -31,20 +33,26 @@ public class MainDemoApp {
 		// close the context
 		AccountDAO theAccountDAO = context.getBean("accountDAO", AccountDAO.class);
 		List<Account> theAccounts = null;
-		System.out.println("\n\n Main Program: AfterThrowingDemoApp");
+		myLogger.info("\n\n Main Program: AfterThrowingDemoApp");
 		try {
 			boolean tripWire = true ;
 
 			theAccounts = theAccountDAO.findAccounts(tripWire);
 		} catch (Exception exec) {
-			System.out.println("Exception Caught in Main Program");
+			myLogger.info("Exception Caught in Main Program");
 		}
 		/*
-		 * System.out.println("\n\n Main Program: AfterReturningDemoApp");
-		 * System.out.println("--------------"); System.out.println(theAccounts);
-		 * System.out.println("\n");
+		 * myLogger.info("\n\n Main Program: AfterReturningDemoApp");
+		 * myLogger.info("--------------"); myLogger.info(theAccounts);
+		 * myLogger.info("\n");
 		 */
-
+		
+       TrafficFortuneService theFortuneService  = context.getBean("trafficFortuneService",TrafficFortuneService.class);
+       myLogger.info("Main Program:  AroundDemo");
+       myLogger.info("Calling Get Fortune");
+       String data = theFortuneService.getFortune();
+       myLogger.info("fortune is : "+data);
+       myLogger.info("Finished");
 		context.close();
 	}
 
