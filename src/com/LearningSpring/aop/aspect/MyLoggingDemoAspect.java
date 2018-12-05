@@ -3,14 +3,29 @@ package com.LearningSpring.aop.aspect;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-public class MyDemoLoggingAspect {
+@Order(2)
+public class MyLoggingDemoAspect {
 	
 	@Pointcut("execution(* com.LearningSpring.aop.dao.*.*(..))")
 	private void forDaoPackage() {
+		
+	}
+	@Pointcut("execution(* com.LearningSpring.aop.dao.*.get*(..))")
+	private void getter() {
+		
+	}
+	@Pointcut("execution(* com.LearningSpring.aop.dao.*.set*(..))")
+	private void setter() {
+		
+	}
+	
+	@Pointcut("(forDaoPackage() && !(getter() || setter()))")
+	private void forDaoPackageNoGetterAndSetter() {
 		
 	}
 
@@ -23,12 +38,15 @@ public class MyDemoLoggingAspect {
 	//@Before("execution(public void add*())")
 	//@Before("execution(* add*(com.LearningSpring.aop.demo.Account,..))")
 	//@Before("execution(* add*(..))")
-	@Before(" forDaoPackage()")
+	
+	@Before("forDaoPackageNoGetterAndSetter()")
 	public void beforeAddAccountAdvice() {
 		
 		System.out.println("\n=====>>> Executing @Before advice on method");
 		
 	}
+	
+	
 }
 
 
